@@ -37,7 +37,7 @@ func (config *Config) Build() *NetworkInterface {
 func (n *NetworkInterface) Add(o object.Object) {
 	switch o.ObjectType() {
 	case object.Route:
-		route := o.(*route.Route)
+		n.Routesroute := o.(*route.Route)
 
 	}
 }

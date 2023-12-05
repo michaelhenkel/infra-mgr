@@ -2,60 +2,45 @@ package instance
 
 import (
 	networkinterface "github.com/michaelhenkel/infra-mgr/networkInterface"
-	"github.com/michaelhenkel/infra-mgr/object"
 )
 
-type Instance struct {
-	Config            *Config
-	NetworkInterfaces map[string]*networkinterface.NetworkInterface
-}
-
 type Config struct {
-	Name   string
-	Vcpu   int
-	Memory string
-	Image  string
+	Name              string
+	Vcpu              int
+	Memory            string
+	Image             string
+	Routes            []NetworkInterfaceRoute
+	NetworkInterfaces []*networkinterface.Config
 }
 
 func New(name string, vcpu int, memory string, image string) *Config {
 	return &Config{
-		Name:   name,
-		Vcpu:   vcpu,
-		Memory: memory,
-		Image:  image,
+		Name:              name,
+		Vcpu:              vcpu,
+		Memory:            memory,
+		Image:             image,
+		Routes:            []NetworkInterfaceRoute{},
+		NetworkInterfaces: []*networkinterface.Config{},
 	}
 }
 
-func (config *Config) Add(object.Object) {
-
+type NetworkInterfaceRoute struct {
+	Destination *networkinterface.Config
+	NextHops    []*networkinterface.Config
 }
 
-func (config *Config) GetName() string {
-	return config.Name
-}
-
-func (config *Config) ObjectType() object.ObjectType {
-	return object.Instance
-}
-
-func (config *Config) Build() *Instance {
-	return &Instance{
-		Config:            config,
-		NetworkInterfaces: make(map[string]*networkinterface.NetworkInterface),
+func (c *Config) AddRoute(networkInterface *networkinterface.Config, nextNetworkInterfaces []*networkinterface.Config) {
+	networkInterfaceRoute := NetworkInterfaceRoute{
+		Destination: networkInterface,
+		NextHops:    nextNetworkInterfaces,
 	}
+	c.Routes = append(c.Routes, networkInterfaceRoute)
 }
 
-func (i *Instance) Add(o object.Object) {
-	switch o.ObjectType() {
-	case object.NetworkInterface:
-		i.NetworkInterfaces[o.GetName()] = o.(*networkinterface.NetworkInterface)
-	}
+func (c *Config) AddNetworkInterface(networkInterface *networkinterface.Config) {
+	c.NetworkInterfaces = append(c.NetworkInterfaces, networkInterface)
 }
 
-func (i *Instance) ObjectType() object.ObjectType {
-	return object.Instance
-}
+func (c *Config) Build() {
 
-func (i *Instance) GetName() string {
-	return i.Config.Name
 }

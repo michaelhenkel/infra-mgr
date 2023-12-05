@@ -1,0 +1,95 @@
+name: infra1
+instances:
+    - name: host1
+      vcpu: 1
+      memory: 1G
+      image: image1
+      routes:
+        - destination:
+            name: h2_eth1
+            network: access2
+          nexthops:
+            - name: r1_eth3
+              network: access1
+      networkinterfaces:
+        - name: h1_eth1
+          network: access1
+    - name: host2
+      vcpu: 1
+      memory: 1G
+      image: image1
+      routes:
+        - destination:
+            name: h1_eth1
+            network: access1
+          nexthops:
+            - name: r2_eth3
+              network: access2
+      networkinterfaces:
+        - name: h2_eth1
+          network: access2
+    - name: router1
+      vcpu: 1
+      memory: 1G
+      image: image1
+      routes:
+        - destination:
+            name: h1_eth1
+            network: access1
+          nexthops:
+            - name: h1_eth1
+              network: access1
+        - destination:
+            name: h2_eth1
+            network: access2
+          nexthops:
+            - name: r2_eth1
+              network: fabric1
+            - name: r2_eth2
+              network: fabric2
+      networkinterfaces:
+        - name: r1_eth1
+          network: fabric1
+        - name: r1_eth2
+          network: fabric2
+        - name: r1_eth3
+          network: access1
+    - name: router2
+      vcpu: 1
+      memory: 1G
+      image: image1
+      routes:
+        - destination:
+            name: h2_eth1
+            network: access2
+          nexthops:
+            - name: h2_eth1
+              network: access2
+        - destination:
+            name: h1_eth1
+            network: access1
+          nexthops:
+            - name: r1_eth1
+              network: fabric1
+            - name: r1_eth2
+              network: fabric2
+      networkinterfaces:
+        - name: r2_eth1
+          network: fabric1
+        - name: r2_eth2
+          network: fabric2
+        - name: r2_eth3
+          network: access2
+networks:
+    - name: fabric1
+      subnet: 10.0.0.0/24
+      gateway: 10.0.0.1
+    - name: fabric2
+      subnet: 10.0.1.0/24
+      gateway: 10.0.1.1
+    - name: access1
+      subnet: 10.0.2.0/24
+      gateway: 10.0.2.1
+    - name: access2
+      subnet: 10.0.3.0/24
+      gateway: 10.0.3.1
